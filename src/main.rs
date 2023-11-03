@@ -59,7 +59,7 @@ fn main() {
         calculate_next_generation(&mut map);
         count += 1;
         println!("Generation: {}", count);
-        thread::sleep(Duration::from_millis(160));
+        thread::sleep(Duration::from_millis(250));
         clearscreen::clear().expect("Failed to clear screen");
     }
 }
@@ -68,7 +68,6 @@ fn main() {
 fn initialize_grid(map: &mut [[u8; 50]; 50]) {
    
     
-    
 }
 
 fn count_neighbors(grid: &mut [[u8; 50]; 50], row: usize, col: usize) -> i32 {
@@ -76,8 +75,8 @@ fn count_neighbors(grid: &mut [[u8; 50]; 50], row: usize, col: usize) -> i32 {
     let mut test_row:i32 ;
     let mut test_col:i32 ;
     let mut value: u8;
-    for delta_row in [(row as i32) - 1, 0, (row as i32) + 1].iter().cloned(){
-        for delta_col in [(col as i32) - 1, 0, (row as i32) + 1].iter().cloned(){
+    for delta_row in [50 - 1, 0, 1].iter().cloned(){
+        for delta_col in [50 - 1, 0, 1].iter().cloned(){
             if delta_row == 0 && delta_col == 0 {
                 continue;
             }
@@ -102,22 +101,35 @@ fn count_neighbors(grid: &mut [[u8; 50]; 50], row: usize, col: usize) -> i32 {
 
 
 fn calculate_next_generation(map: &mut [[u8; 50]; 50]) {
-    let mut new_map = [[0; 50]; 50];
-
+    let mut next_generation = [[0; 50]; 50];
     for i in 0..50 {
         for j in 0..50 {
             let neighbors = count_neighbors(map, i, j);
-            if neighbors < 2 || neighbors > 3 {map[i][j] = 0;}
-            if neighbors == 2 || neighbors == 3 {map[i][j] = 1;}
-            
+  //          if neighbors < 2 || neighbors > 3 {map[i][j] = 0;}
+//            if neighbors == 2 || neighbors == 3 {map[i][j] = 1;}
+            if map[i][j] == 1 {
+                if neighbors < 2 || neighbors > 3 {
+                    next_generation[i][j] = 0;
+                }else{
+                    next_generation[i][j] = 1;
+                }
+            }else{
+                if neighbors == 3 {
+                    next_generation[i][j] = 1; // Dead cell becomes alive due to reproduction
+                }
+            }       
+        }
+    }
+    
+
+
+
+    for i in 0..50 {
+        for j in 0..50 {
+            map[i][j] = next_generation[i][j];
         }
     }
 
-    //for i in 0..50 {
-       // for j in 0..50 {
-     //       map[i][j] = new_map[i][j];
-      //  }
-    //}
 }
 
 fn display(map: &[[u8; 50]; 50], count: u64) {
